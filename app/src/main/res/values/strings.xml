@@ -1,0 +1,9 @@
+<resources>
+    <string name="app_name">broccoli</string>
+    <string name="action_settings">Settings</string>
+    <string name="intro_message">Welcome to broccolis!</string>
+    <string name="picture">Picture</string>
+    <string name="request_permission">I need camera permission</string>
+    <string name="camera_error">Error: Camera!</string>
+    <string name="description_info">The app to recognize broccolis</string>
+</resources>
