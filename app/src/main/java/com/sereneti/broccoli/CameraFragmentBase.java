@@ -1089,16 +1089,17 @@ public class CameraFragmentBase extends Fragment
 
         private Timer mTimer;
 
-        private String[] tags = {"background","broccoli","chicken","beef","potato"};
+        private String[] tags = {"background","broccoli","penne","chicken","spinach","carrot","shrimp","zucchini"};
 
         public CanvasView(CameraFragmentBase context) {
             super(context.getActivity().getBaseContext());
             mHolder = getHolder();
             mHolder.setFormat(PixelFormat.TRANSLUCENT);
             paint = new Paint(Paint.ANTI_ALIAS_FLAG);
-            paint.setColor(Color.RED);
+            paint.setColor(Color.GREEN);
             paint.setStyle(Paint.Style.STROKE);
             paint.setStrokeWidth(5.0f);
+            paint.setTextSize(60f);
 
             setWillNotDraw(false);
             //AsyncSendImg();
@@ -1125,6 +1126,32 @@ public class CameraFragmentBase extends Fragment
             boxCred = new ArrayList<>();
             boxTag = new ArrayList<>();
             try {
+
+                //The GOOGLE MODEL
+
+                JSONObject jsonObject = new JSONObject(s);
+                Log.d("websocket",jsonObject.toString());
+                JSONArray boxesJsonArray = jsonObject.getJSONArray("boxes").getJSONArray(0);
+                JSONArray scoresJsonArray = jsonObject.getJSONArray("scores").getJSONArray(0);
+                JSONArray classesJsonArray = jsonObject.getJSONArray("classes").getJSONArray(0);
+                for(int i = 0;i < boxesJsonArray.length();i++){
+                    JSONArray boxArray = (JSONArray)boxesJsonArray.get(i);
+
+                    if(scoresJsonArray.getDouble(i) > 0.3 && classesJsonArray.getInt(i) != 0){
+                        double[] coords = {boxArray.getDouble(1)*mPreviewSize.getHeight(),
+                                boxArray.getDouble(0)*mPreviewSize.getWidth(),
+                                boxArray.getDouble(3)*mPreviewSize.getHeight(),
+                                boxArray.getDouble(2)*mPreviewSize.getWidth()};
+                        boxCoords.add(coords);
+                        boxCred.add(scoresJsonArray.getDouble(i));
+                        boxTag.add(classesJsonArray.getInt(i));
+                        Log.d("websocket", Double.toString(coords[0]) + " " +
+                                Double.toString(coords[1]) + " " +
+                                Double.toString(coords[2]) + " " +
+                                Double.toString(coords[3]) + " " +
+                                Double.toString(scoresJsonArray.getDouble(i)));
+                    }
+                }/*
                 JSONObject jsonObject = new JSONObject(s);
                 JSONArray boxesJsonArray = jsonObject.getJSONArray("boxes");
                 JSONArray scoresJsonArray = jsonObject.getJSONArray("scores");
@@ -1154,7 +1181,7 @@ public class CameraFragmentBase extends Fragment
                                 Double.toString(coords[3]) + " " +
                                 Double.toString(max));
                     }
-                }
+                }*/
             } catch (JSONException e) {
                 Log.d("json","exception");
                 e.printStackTrace();
@@ -1191,7 +1218,7 @@ public class CameraFragmentBase extends Fragment
 
         private void AsyncSendImg(){
             final AsyncWebSocket asyncWebSocket = new AsyncWebSocket();
-            AsyncHttpClient.getDefaultInstance().websocket("ws://104.199.120.217:3000",null,asyncWebSocket);
+            AsyncHttpClient.getDefaultInstance().websocket("ws://35.196.58.77:3000",null,asyncWebSocket);
             Bitmap bmp = mTextureView.getBitmap();
             ByteArrayOutputStream stream = new ByteArrayOutputStream();
             bmp.compress(Bitmap.CompressFormat.JPEG, 100, stream);
